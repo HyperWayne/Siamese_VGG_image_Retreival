@@ -41,6 +41,6 @@ def network(input, reuse=False):
 def contrastive_loss(model_left, model_right, y, margin):
 	with tf.name_scope("contrastive-loss"):
 		d = tf.sqrt(tf.reduce_sum(tf.pow(model_left-model_right, 2), 1, keep_dims=True))
-		tmp= y * tf.square(d)    
-		tmp2 = (1 - y) * tf.square(tf.maximum((margin - d),0))
+		tmp= (y*2-1) * tf.square(d)    
+		tmp2 = (1 - (y*2-1)) * tf.square(tf.maximum((margin - d),0))
 		return tf.reduce_mean(tmp + tmp2) /2

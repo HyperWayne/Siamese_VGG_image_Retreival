@@ -26,7 +26,7 @@ class ImageSet:
         tmp_simB = ['Data/'+i.split()[2] for i in content]
         
         # Number of current data (SimilarA : N, same as B and all unsimilar)
-        N = 421
+        N = 781
         self.label= []
         self.simA = np.zeros((N, 256*256, 3)) 
         self.simB = np.zeros((N, 256*256, 3)) 
@@ -38,4 +38,4 @@ class ImageSet:
         for idx,element in enumerate(tmp_simB):
             imgB = cv2.imread(element)
             self.simB[idx]  = np.reshape(imgB,[256*256, 3])
-            self.label.append('un' in tmp_label[idx])
+            self.label.append('Un' not in tmp_label[idx])

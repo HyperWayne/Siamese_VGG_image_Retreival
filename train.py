@@ -3,26 +3,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow.contrib.slim as slim
 
-from dataset import BatchGenerator, get_mnist
+from dataset import BatchGenerator
 from model import *
 from yasuo import Yasuo
 
-#flags.DEFINE_integer('batch_size', 100, 'Batch size.')
-#flags.DEFINE_integer('train_iter', 5000, 'Total training iter')
-#flags.DEFINE_integer('step', 500, 'Save after ... iteration')
+flags.DEFINE_integer('batch_size', 100, 'Batch size.')
+flags.DEFINE_integer('train_iter', 450, 'Total training iter')
+flags.DEFINE_integer('step', 500, 'Save after ... iteration')
 
 #mnist = get_mnist()
-#gen = BatchGenerator(mnist.train.images, mnist.train.labels)
+#
 #test_im = np.array([im.reshape((28,28,1)) for im in mnist.test.images])
 
 hasaki = Yasuo('Data/pair.txt')
 
+gen = BatchGenerator(hasaki.Train.simA, hasaki.Train.simB, hasaki.Train.label)
 
 # len(hasaki.Train.simA)) = len(hasaki.Train.simB)) = len(hasaki.Train.label))
 
 
-left = tf.placeholder(tf.float32, [None, 28, 28, 1], name='left')
-right = tf.placeholder(tf.float32, [None, 28, 28, 1], name='right')
+left = tf.placeholder(tf.float32, [None, 256, 256, 3], name='left')
+right = tf.placeholder(tf.float32, [None, 256, 256, 3], name='right')
 
 with tf.name_scope("similarity"):
 	label = tf.placeholder(tf.int32, [None, 1], name='label') # 1 if same, 0 if different
@@ -58,10 +59,8 @@ with tf.Session() as sess:
 	#train iter
    for i in range(FLAGS.train_iter):
 
-      b_l = sess.run(image_batchA)
-      b_r = sess.run(image_batchB)
-      #b_l, b_r, b_sim = gen.next_batch(FLAGS.batch_size)
-      _, l, summary_str = sess.run([train_step, loss, merged], feed_dict={left:b_l, right:b_r, label: 1})
+      b_l, b_r, b_sim = gen.next_batch(FLAGS.batch_size)
+      _, l, summary_str = sess.run([train_step, loss, merged], feed_dict={left:b_l, right:b_r, label: b_sim})
 		
         
       coord.request_stop()
